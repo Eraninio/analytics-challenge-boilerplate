@@ -44,10 +44,25 @@ router.get('/all-filtered', (req: Request, res: Response) => {
   if (!f.name) delete f.name;
   if (!f.browser) delete f.browser;
 
-  const data = db.get('events').filter(f).value();
-  res.send({events: data.slice(0, filter.offset), more: true})
+  let data = db.get('events').filter(f).value();
 
+  if (filter.search !== "") {
+    const reg: RegExp = new RegExp(filter.search, "i");
+    data = data.filter((event: Event) => {
+      return reg.test(JSON.stringify(event));
+    });
+  }
+
+  if (filter.sorting) {
+    data.sort((e1: Event, e2: Event) =>
+      filter.sorting[0] === "+" ? e1.date - e2.date : e2.date - e1.date
+    )};
+    const more = data.length >= filter.offset;
+
+  res.send({ events: data.slice(0, filter.offset), more 
+  });
 });
+
 
 router.get('/by-days/:offset', (req: Request, res: Response) => {
   res.send('/by-days/:offset')
@@ -69,6 +84,7 @@ router.get('/retention', (req: Request, res: Response) => {
   const {dayZero} = req.query
   res.send('/retention')
 });
+
 router.get('/:eventId',(req : Request, res : Response) => {
   res.send('/:eventId')
 });
