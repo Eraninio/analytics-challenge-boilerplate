@@ -4,9 +4,9 @@ import express from "express";
 import { Request, Response } from "express";
 
 // some useful database functions in here:
-import {
+import db, {
 } from "./database";
-import { Event, weeklyRetentionObject } from "../../client/src/models/event";
+import { browser, Event, eventName, weeklyRetentionObject } from "../../client/src/models/event";
 import { ensureAuthenticated, validateMiddleware } from "./helpers";
 
 import {
@@ -15,25 +15,38 @@ import {
   userFieldsValidator,
   isUserValidator,
 } from "./validators";
+import { filter } from "bluebird";
 const router = express.Router();
 
 // Routes
+type sort = '+date' | '-date';
 
 interface Filter {
   sorting: string;
-  type: string;
-  browser: string;
+  type: eventName;
+  browser: browser;
   search: string;
   offset: number;
 }
+interface f {
+  name? : eventName;
+  browser? : browser
+}
 
 router.get('/all', (req: Request, res: Response) => {
-  res.send('/all')
-    
+  const data = db.get('events').value()
+  res.json(data);
 });
 
 router.get('/all-filtered', (req: Request, res: Response) => {
-  res.send('/all-filtered')
+  const filter : Filter = req.query;
+  const f: f = {name: filter.type, browser: filter.browser};
+  if (!f.name) delete f.name;
+  if (!f.browser) delete f.browser;
+
+  const data = db.get('events').filter(f).value();
+  res.send({events: data.slice(0, filter.offset), more: true})
+
 });
 
 router.get('/by-days/:offset', (req: Request, res: Response) => {
