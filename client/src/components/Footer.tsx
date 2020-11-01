@@ -3,6 +3,7 @@ import Typography from "@material-ui/core/Typography";
 import { ReactComponent as CypressLogo } from "../svgs/cypress-logo.svg";
 import { Container } from "@material-ui/core";
 
+
 export default function Footer() {
   return (
     <Container maxWidth="sm" style={{ marginTop: 50 }}>
