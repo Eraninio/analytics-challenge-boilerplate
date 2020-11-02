@@ -149,8 +149,11 @@ router.get('/:eventId',(req : Request, res : Response) => {
 });
 
 router.post('/', (req: Request, res: Response) => {
-  res.send('/')
-});
+  const event: Event = req.body;
+  db.get('events').push(event).write();
+  res.send("added");
+  }
+);
 
 router.get('/chart/os/:time',(req: Request, res: Response) => {
   res.send('/chart/os/:time')
