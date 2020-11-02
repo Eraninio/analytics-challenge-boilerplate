@@ -44,12 +44,14 @@ router.get('/all-filtered', (req: Request, res: Response) => {
   if (!f.name) delete f.name;
   if (!f.browser) delete f.browser;
 
-  let data = db.get('events').filter(f).value();
+  let data : any[]= db.get('events').filter(f).value();
 
   if (filter.search !== "") {
     const reg: RegExp = new RegExp(filter.search, "i");
     data = data.filter((event: Event) => {
-      return reg.test(JSON.stringify(event));
+      return Object.values(event).some(value=>{
+        return reg.test(value.toString());
+      })
     });
   }
 
