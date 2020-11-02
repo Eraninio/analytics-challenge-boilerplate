@@ -99,9 +99,7 @@ router.get('/by-days/:offset', (req: Request, res: Response) => {
       date: `${year}/${month}/${day}`,
       count: countByDay
     })
-  })
-  console.log(results);
-  
+  })  
   res.send(results)
 });
 
