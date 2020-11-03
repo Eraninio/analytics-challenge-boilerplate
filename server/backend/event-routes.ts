@@ -17,6 +17,7 @@ import {
 } from "./validators";
 import { filter } from "bluebird";
 import { result } from "lodash";
+import { database } from "faker";
 const router = express.Router();
 
 // Routes
@@ -43,6 +44,15 @@ const getStartOfDay = (date: Date): Date => {
 
 const getCurrentDayTimeWithOffset = (offset: number) => {
   return getStartOfDay(new Date()).getTime() - (24 * 60 * 60 * 1000) * offset
+}
+
+const getEndOfDay = (date: Date): Date => {
+  let year = date.getFullYear();
+  let month = date.getMonth() + 1;
+  let day = date.getDate();
+  const startTime = new Date(`${year}/${month}/${day}`).getTime();
+  const endTime = startTime + 24 * 60 * 60 * 1000 - 1;
+  return new Date(endTime);
 }
 
 router.get('/all', (req: Request, res: Response) => {
@@ -141,8 +151,61 @@ router.get('/week', (req: Request, res: Response) => {
   res.send('/week')
 });
 
+
 router.get('/retention', (req: Request, res: Response) => {
-  const { dayZero } = req.query
+
+  const dayZero = parseInt(req.query.dayZero)
+
+  let signUpData = db.get('events').filter({ name: 'signup' }).orderBy('date').value();
+  let dayTime = 24 * 60 * 60 * 1000;
+  const newUsersPerWeek: any[] = [];
+  let startDay = new Date(new Date(dayZero).toDateString()).valueOf();
+  while (startDay < new Date().getTime()) {
+    let count = 0;
+    let signedUpUsers: string[] = [];
+    signUpData.forEach(event => {
+      if (startDay < event.date && event.date < startDay + 7 * dayTime) {
+        count++;
+        signedUpUsers.push(event.distinct_user_id);
+      }
+    })
+    newUsersPerWeek.push({ signedUpUsers, count });
+    startDay += dayTime * 7
+  }
+  console.log(newUsersPerWeek);
+
+
+  let loginData = db.get('events').filter({ name: 'login' }).orderBy('date').value();
+  let i = 0;
+  startDay = new Date(new Date(dayZero).toDateString()).valueOf();
+  let allWeeksLoginPerWeek = [];
+  while (i <= (new Date().getTime() - dayZero) / dayTime / 7) {
+    startDay += dayTime * 7 * i;
+    const loginPerWeek = [];
+    while (startDay < new Date().getTime()) {
+      let count = 0;
+      let userId: string[] = [];
+      loginData.forEach(event => {
+        if (startDay < event.date && event.date < startDay + 7 * dayTime && newUsersPerWeek[i].signedUpUsers.some((id: string) => event.distinct_user_id === id)) {
+          const index = newUsersPerWeek[i].signedUpUsers.findIndex((id: string) => event.distinct_user_id === id)
+          userId.push(newUsersPerWeek[i].signedUpUsers.splice(index, 1));
+          count++;
+        }
+      })
+      userId.forEach(id => { newUsersPerWeek[i].signedUpUsers.push(id) });
+      userId = [];
+      loginPerWeek.push(count);
+      startDay += dayTime * 7
+    }
+    allWeeksLoginPerWeek.push(loginPerWeek);
+    i++;
+    startDay = new Date(new Date(dayZero).toDateString()).valueOf();
+
+  }
+  console.log(allWeeksLoginPerWeek);
+
+
+
   res.send('/retention')
 });
 
@@ -175,3 +238,48 @@ router.get('/chart/geolocation/:time', (req: Request, res: Response) => {
 
 
 export default router;
+
+[
+  {
+    registrationWeek: 1,
+    start: '2020/09/28',
+    end: '2020/10/05',
+    newUsers: 10,
+    weeklyRetention: [100, 30, 60, 90, 80, 0]
+  },
+  {
+    registrationWeek: 2,
+    start: '2020/10/05',
+    end: '2020/10/12',
+    newUsers: 10,
+    weeklyRetention: [100, 90, 60, 100, 0]
+  },
+  {
+    registrationWeek: 3,
+    start: '2020/10/12',
+    end: '2020/10/19',
+    newUsers: 11,
+    weeklyRetention: [100, 100, 82, 9]
+  },
+  {
+    registrationWeek: 4,
+    start: '2020/10/19',
+    end: '2020/10/26',
+    newUsers: 10,
+    weeklyRetention: [100, 100, 10]
+  },
+  {
+    registrationWeek: 5,
+    start: '2020/10/26',
+    end: '2020/11/02',
+    newUsers: 9,
+    weeklyRetention: [100, 44]
+  },
+  {
+    registrationWeek: 6,
+    start: '2020/11/02',
+    end: '2020/11/09',
+    newUsers: 0,
+    weeklyRetention: [100]
+  }
+]
