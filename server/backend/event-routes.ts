@@ -30,8 +30,8 @@ interface Filter {
   offset: number;
 }
 interface f {
-  name? : eventName;
-  browser? : browser
+  name?: eventName;
+  browser?: browser
 }
 
 const getStartOfDay = (date: Date): Date => {
@@ -51,17 +51,17 @@ router.get('/all', (req: Request, res: Response) => {
 });
 
 router.get('/all-filtered', (req: Request, res: Response) => {
-  const filter : Filter = req.query;
-  const f: f = {name: filter.type, browser: filter.browser};
+  const filter: Filter = req.query;
+  const f: f = { name: filter.type, browser: filter.browser };
   if (!f.name) delete f.name;
   if (!f.browser) delete f.browser;
 
-  let data : any[]= db.get('events').filter(f).value();
+  let data: any[] = db.get('events').filter(f).value();
 
   if (filter.search !== "") {
     const reg: RegExp = new RegExp(filter.search, "i");
     data = data.filter((event: Event) => {
-      return Object.values(event).some(value=>{
+      return Object.values(event).some(value => {
         return reg.test(value.toString());
       })
     });
@@ -70,39 +70,41 @@ router.get('/all-filtered', (req: Request, res: Response) => {
   if (filter.sorting) {
     data.sort((e1: Event, e2: Event) =>
       filter.sorting[0] === "+" ? e1.date - e2.date : e2.date - e1.date
-    )};
-    const more = data.length >= filter.offset;
+    )
+  };
+  const more = data.length >= filter.offset;
 
-  res.send({ events: data.slice(0, filter.offset), more 
+  res.send({
+    events: data.slice(0, filter.offset), more
   });
 });
 
 router.get('/by-days/:offset', (req: Request, res: Response) => {
-  let data : any[]= db.get('events').value();
-  let dayTime = 24*60*60*1000;
+  let data: any[] = db.get('events').value();
+  let dayTime = 24 * 60 * 60 * 1000;
   let endDate = getStartOfDay(new Date()).getTime() + dayTime - 1 - parseInt(req.params.offset) * dayTime;
-  data =data.filter(event => {
-    if(endDate > event.date && endDate - 7 * dayTime < event.date){
+  data = data.filter(event => {
+    if (endDate > event.date && endDate - 7 * dayTime < event.date) {
       return true
     } else {
       return false
     }
   })
-  let days : Array<number> = [0, 0, 0, 0, 0, 0, 0];
+  let days: Array<number> = [0, 0, 0, 0, 0, 0, 0];
   data.forEach(event => {
     let temp = endDate - event.date;
-    days[Math.floor(temp/dayTime)]++;
+    days[Math.floor(temp / dayTime)]++;
   })
   const results: any[] = [];
   days.forEach((countByDay, index) => {
     let year = new Date(endDate - dayTime * index).getUTCFullYear();
-    let month = new Date(endDate  - dayTime * index).getUTCMonth();
-    let day = new Date(endDate  - dayTime * index).getUTCDate();
+    let month = new Date(endDate - dayTime * index).getUTCMonth();
+    let day = new Date(endDate - dayTime * index).getUTCDate();
     results.unshift({
       date: `${year}/${month}/${day}`,
       count: countByDay
     })
-  })  
+  })
   res.send(results)
 });
 
@@ -140,11 +142,11 @@ router.get('/week', (req: Request, res: Response) => {
 });
 
 router.get('/retention', (req: Request, res: Response) => {
-  const {dayZero} = req.query
+  const { dayZero } = req.query
   res.send('/retention')
 });
 
-router.get('/:eventId',(req : Request, res : Response) => {
+router.get('/:eventId', (req: Request, res: Response) => {
   res.send('/:eventId')
 });
 
@@ -152,23 +154,22 @@ router.post('/', (req: Request, res: Response) => {
   const event: Event = req.body;
   db.get('events').push(event).write();
   res.send("added");
-  }
-);
+});
 
-router.get('/chart/os/:time',(req: Request, res: Response) => {
+router.get('/chart/os/:time', (req: Request, res: Response) => {
   res.send('/chart/os/:time')
 })
 
-  
-router.get('/chart/pageview/:time',(req: Request, res: Response) => {
+
+router.get('/chart/pageview/:time', (req: Request, res: Response) => {
   res.send('/chart/pageview/:time')
 })
 
-router.get('/chart/timeonurl/:time',(req: Request, res: Response) => {
+router.get('/chart/timeonurl/:time', (req: Request, res: Response) => {
   res.send('/chart/timeonurl/:time')
 })
 
-router.get('/chart/geolocation/:time',(req: Request, res: Response) => {
+router.get('/chart/geolocation/:time', (req: Request, res: Response) => {
   res.send('/chart/geolocation/:time')
 })
 
