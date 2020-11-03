@@ -74,7 +74,7 @@ describe("main test", () => {
     expect(sessionsByHours2.reduce((sum: number, day: { date: string; count: number }) => sum += day.count, 0)).toBe(25)
   });
 
-  it.only("retention cohort", async () => {
+  it("retention cohort", async () => {
     const today = new Date(new Date().toDateString()).getTime() + 6 * OneHour
     const dayZero = today - 5 * OneWeek
 
