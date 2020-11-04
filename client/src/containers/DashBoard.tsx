@@ -1,7 +1,13 @@
 import React from "react";
 import { Interpreter } from "xstate";
 import { AuthMachineContext, AuthMachineEvents } from "../machines/authMachine";
-import Map from './Final/maps';
+import Maps from '../components/Final/Maps';
+import GraphByDay from '../components/Final/GraphByDay';
+import GraphByHour from '../components/Final/GraphByHour';
+import RetentionCohort from '../components/Final/Retention';
+
+
+
 
 export interface Props {
   authService: Interpreter<AuthMachineContext, any, AuthMachineEvents, any>;
@@ -10,8 +16,11 @@ export interface Props {
 const DashBoard: React.FC = () => {
   return (
     <>
-      <div style={{ display: 'flex' }}>
-        <Map />
+      <div >
+        <Maps />
+        <GraphByDay />
+        <GraphByHour />
+        <RetentionCohort />
       </div>
     </>
   );
