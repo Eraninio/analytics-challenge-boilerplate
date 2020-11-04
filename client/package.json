@@ -23,6 +23,7 @@
     "@material-ui/lab": "4.0.0-alpha.56",
     "@material-ui/pickers": "^3.2.10",
     "@percy/cypress": "2.3.2",
+    "@react-google-maps/api": "^1.13.0",
     "@types/bluebird": "3.5.32",
     "@types/connect-flash": "0.0.35",
     "@types/dinero.js": "1.6.5",
