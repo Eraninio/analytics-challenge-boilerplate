@@ -20,7 +20,6 @@ const Maps: React.FC = () => {
         (async () => {
             const { data } = await axios.get('http://localhost:3001/events/all')
             setEvents(data);
-            console.log(data)
         })()
     }, []);
 

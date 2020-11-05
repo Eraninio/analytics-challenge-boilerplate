@@ -1,91 +1,94 @@
-import React, { useEffect, useState } from "react";
-import axios from "axios";
-import "./RetentionCohort.css";
-import { weeklyRetentionObject } from '../../models/event'
+import React, { useEffect, useState } from 'react';
+import { withStyles, makeStyles } from '@material-ui/core/styles';
+import Table from '@material-ui/core/Table';
+import TableBody from '@material-ui/core/TableBody';
+import TableCell from '@material-ui/core/TableCell';
+import TableContainer from '@material-ui/core/TableContainer';
+import TableHead from '@material-ui/core/TableHead';
+import TableRow from '@material-ui/core/TableRow';
+import Paper from '@material-ui/core/Paper';
+import axios from 'axios';
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 
 
 
-const weekDataBlock = (week: weeklyRetentionObject) => {
-    const { registrationWeek, weeklyRetention } = week;
-    return weeklyRetention.map((percent: number, i: number) => {
-        const returnedUserPercent = Math.round(percent);
-        const redGreen = String(100 - returnedUserPercent) + "%";
-        return (
-            <td
-                key={`week${registrationWeek}block${i}`}
-                className="weekDataBlock"
-                title={returnedUserPercent + "%"}
-                style={{ backgroundColor: `rgb(${redGreen},${redGreen},100%)` }}
-            />
-        );
-    });
-};
+export default function Retention() {
+    const [data, setData] = useState<Array<any>>([]);
+    const [startDate, setStartDate] = useState(new Date());
 
-const RetentionCohort = () => {
-    const [weeks, setWeeks] = useState<weeklyRetentionObject[]>([]);
+
+
     useEffect(() => {
-        axios.get("http://localhost:3001/events/retention")
-            .then(({ data }) => { setWeeks((data)) });
-    }, [])
+        (async () => {
+            const { data } = await axios.get(`http://localhost:3001/events/retention?dayZero=${startDate.getTime()}`)
+            setData(data);
+            console.log(data)
+        })()
+    }, [startDate]);
 
-    const totalUsers = weeks.reduce((total, current) => {
-        return total + current.newUsers;
-    }, 0);
-    function CalculateAllUsersRetention(registrationWeek: number) {
-        const retentionByWeek: number[] = weeks.map((week) => {
-            const { weeklyRetention } = week;
-            return weeklyRetention[registrationWeek];
-        });
-        const trimmedArray = retentionByWeek //remove undefined values
-            .filter((weeklyRetention) => typeof weeklyRetention === 'number');
-        console.log(trimmedArray)
-        return Math.round(
-            trimmedArray.reduce((total, cur) => total + cur, 0) / trimmedArray.length
-        );
+
+    const StyledTableCell = withStyles((theme) => ({
+        head: {
+            backgroundColor: theme.palette.common.black,
+            color: theme.palette.common.white,
+        },
+        body: {
+            fontSize: 14,
+        },
+    }))(TableCell);
+
+    const StyledTableRow = withStyles((theme) => ({
+        root: {
+            '&:nth-of-type(odd)': {
+                backgroundColor: theme.palette.action.hover,
+            },
+        },
+    }))(TableRow);
+
+    function createData(start: string, end: string, weeks: Array<number>) {
+        const object: any = {};
+        object.empty = `${start}-${end}`
+        weeks.forEach((weekPercentage, index) => {
+            object[`week${index}`] = weekPercentage
+        })
+        return object;
     }
 
+    const rows: any[] = data.map((retentionWeek, index) => {
+        return createData(retentionWeek.start, retentionWeek.end, retentionWeek.weeklyRetention);
+    })
+
+    const useStyles = makeStyles({
+        table: {
+            minWidth: 700,
+        },
+    });
+    const classes = useStyles();
+
     return (
-        <div className="retention-cohort">
-            <button onClick={() => { console.log(weeks) }}>clk</button>
-            <h1>User Retention</h1>
-            <div className="table-container">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>registration</th>
-                            {weeks.map((week) => (
-                                <th key={"week" + week.registrationWeek}>{
-                                    `week${week.registrationWeek}`
-                                }</th>
-                            ))}
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr className='weekly-percents'>
-                            <td>All users</td>
-                            {weeks.map(({ registrationWeek }) => (
-                                <td key={"week" + registrationWeek + "ret"}>
-                                    {CalculateAllUsersRetention(registrationWeek) + "%"}
-                                </td>
-                            ))}
-                        </tr>
-                        {weeks.map((week) => {
-                            return (
-                                <tr key={"week" + week.registrationWeek} className="retention-week">
-                                    <td>
-                                        {`week ${week.registrationWeek}`}
-                                        <br />
-                                        {`${week.start} ${'→'} ${week.end}`}
-                                    </td>
-                                    {weekDataBlock(week)}
-                                </tr>
-                            );
-                        })}
-                    </tbody>
-                </table>
-            </div>
+        <div>
+            <DatePicker selected={startDate} onChange={(date: Date) => setStartDate(date)} />
+            <TableContainer component={Paper}>
+                <Table className={classes.table} aria-label="customized table">
+                    <TableHead>
+                        <TableRow>
+                            {rows[0] ? Object.keys(rows[0]).map(key => {
+                                return <StyledTableCell align="left">{key}</StyledTableCell>
+                            }) : null}
+                        </TableRow>
+                    </TableHead>
+                    <TableBody>
+                        {rows.map((row) => (
+                            <StyledTableRow key={row.name}>
+                                {Object.keys(rows[0]).map(key => {
+                                    return <StyledTableCell align="left">{row[key]}</StyledTableCell>
+                                })}
+                            </StyledTableRow>
+                        ))}
+                    </TableBody>
+                </Table>
+            </TableContainer>
         </div>
     );
-};
-
-export default RetentionCohort;
+}
