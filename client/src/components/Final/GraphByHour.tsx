@@ -17,9 +17,9 @@ const GraphByHour: React.FC = () => {
     }, [startDate])
 
     return (
-        <div style={{ border: 'solid' }}>
+        <div >
             <DatePicker selected={startDate} onChange={(date: Date) => setStartDate(date)} />
-            <LineChart width={600} height={300} data={data}>
+            <LineChart width={400} height={200} data={data}>
                 <Line type="linear" dataKey='count' stroke="blue" />
                 <CartesianGrid stroke="#ccc" />
                 <XAxis dataKey="hour" />

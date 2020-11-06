@@ -1,0 +1,16 @@
+.gridContainer {
+    display: grid;
+    grid-template-columns: 1fr 0.6fr 1.4fr 1fr;
+    grid-template-rows: 1fr 1fr 1fr;
+    gap: 0px 0px;
+    grid-template-areas:
+      "Map Map GraphByDay GraphByDay"
+      "GraphByHour GraphByHour GraphByHour pieChart"
+      "RetentionCohort RetentionCohort AllFiltered AllFiltered";
+  }
+Map { grid-area: map; }
+GraphByDay { grid-area: graphByDay; }
+GraphByHour { grid-area: graphByHours; }
+pieChart { grid-area: pieChart; }
+AllFiltered { grid-area: AllFiltered; }
+RetentionCohort { grid-area: retentionCohort; }

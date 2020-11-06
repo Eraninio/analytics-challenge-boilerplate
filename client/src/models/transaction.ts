@@ -104,3 +104,9 @@ export type TransactionPagination = {
   hasNextPages: boolean;
   totalPages: number;
 };
+export type EventPagination = {
+  page: number;
+  limit: number;
+  hasNextPages: boolean;
+  totalPages: number;
+};

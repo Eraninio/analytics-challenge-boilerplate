@@ -21,7 +21,7 @@ const GraphByDay: React.FC = () => {
     return (
         <div>
             <DatePicker selected={startDate} onChange={(date: Date) => setStartDate(date)} />
-            <LineChart width={600} height={300} data={data}>
+            <LineChart width={400} height={200} data={data}>
                 <Line type="linear" dataKey='count' stroke="red" />
                 <CartesianGrid stroke="#ccc" />
                 <XAxis dataKey="date" />

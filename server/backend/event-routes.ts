@@ -2,6 +2,9 @@
 
 import express from "express";
 import { Request, Response } from "express";
+import { getPaginatedItems } from "../../client/src/utils/transactionUtils";
+
+
 
 // some useful database functions in here:
 import db, {
@@ -213,6 +216,48 @@ router.get('/retention', (req: Request, res: Response) => {
 
   res.send(weeklyRetentionArray)
 });
+
+router.get('/filtered', (req: Request, res: Response) => {
+  const filter: Filter = req.query;
+  const f: f = { name: filter.type, browser: filter.browser };
+
+  if (!f.name) delete f.name;
+  if (!f.browser) delete f.browser;
+
+  let data = db.get('events').filter(f).value();
+
+  if (filter.search !== "") {
+    const reg: RegExp = new RegExp(filter.search, "i");
+    data = data.filter((event: Event) => {
+      return Object.values(event).some(value => {
+        return reg.test(value.toString());
+      })
+    });
+  }
+
+  if (filter.sorting) {
+    data.sort((e1: Event, e2: Event) =>
+      filter.sorting[0] === "+" ? e1.date - e2.date : e2.date - e1.date
+    );
+  }
+  const { totalPages, data: paginatedItems } = getPaginatedItems(
+    req.query.page,
+    req.query.limit,
+    data
+  );
+
+  res.status(200);
+  res.json({
+    pageData: {
+      page: res.locals.paginate.page,
+      limit: res.locals.paginate.limit,
+      hasNextPages: res.locals.paginate.hasNextPages(totalPages),
+      totalPages,
+    },
+    results: paginatedItems,
+  });
+}
+);
 
 router.get('/:eventId', (req: Request, res: Response) => {
   res.send('/:eventId')

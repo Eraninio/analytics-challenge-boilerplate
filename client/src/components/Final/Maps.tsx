@@ -5,13 +5,14 @@ import axios from 'axios';
 
 const containerStyle = {
     width: '800px',
-    height: '700px'
+    height: '350px',
 };
 
 const center = {
     lat: 0,
     lng: 0
 };
+
 
 const Maps: React.FC = () => {
     const [events, setEvents] = useState<Event[]>();
@@ -26,7 +27,7 @@ const Maps: React.FC = () => {
     return (
         <div>
             <LoadScript googleMapsApiKey="AIzaSyAEMP6kieesS5cRLG8dV_1_nyHdNeUxi7M">
-                <GoogleMap mapContainerStyle={containerStyle} center={center} zoom={1.5}>
+                <GoogleMap mapContainerStyle={containerStyle} center={center} zoom={2}>
                     <MarkerClusterer averageCenter enableRetinaIcons gridSize={80} >
                         {(cluterer) => events ? events.map(event => (
                             <Marker key={event._id} clusterer={cluterer} position={event.geolocation.location} />

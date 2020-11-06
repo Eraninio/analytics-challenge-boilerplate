@@ -23,7 +23,6 @@ export default function Retention() {
         (async () => {
             const { data } = await axios.get(`http://localhost:3001/events/retention?dayZero=${startDate.getTime()}`)
             setData(data);
-            console.log(data)
         })()
     }, [startDate]);
 
@@ -61,7 +60,7 @@ export default function Retention() {
 
     const useStyles = makeStyles({
         table: {
-            minWidth: 700,
+            minWidth: 850,
         },
     });
     const classes = useStyles();
