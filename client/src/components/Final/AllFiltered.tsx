@@ -8,7 +8,6 @@ import { eventMachine } from "../../machines/eventMachine";
 const EventsPagedlList: React.FC = () => {
     const [current, send] = useMachine(eventMachine);
     const { pageData, results } = current.context;
-    console.log(results);
 
     const [searchWord, setSearchWord] = useState<string>('')
     const search = (e: any) => {

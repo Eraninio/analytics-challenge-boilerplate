@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { LineChart, Tooltip, Legend, Line, CartesianGrid, XAxis, YAxis } from 'recharts';
+import { LineChart, Tooltip, Legend, Line, CartesianGrid, XAxis, YAxis, ResponsiveContainer } from 'recharts';
 import axios from 'axios';
 import { Event } from '../../models/event';
 import DatePicker from "react-datepicker";
@@ -18,15 +18,18 @@ const GraphByHour: React.FC = () => {
 
     return (
         <div >
-            <DatePicker selected={startDate} onChange={(date: Date) => setStartDate(date)} />
-            <LineChart width={400} height={200} data={data}>
-                <Line type="linear" dataKey='count' stroke="blue" />
-                <CartesianGrid stroke="#ccc" />
-                <XAxis dataKey="hour" />
-                <YAxis />
-                <Tooltip />
-                <Legend />
-            </LineChart>
+            <strong>Pick A Date:</strong><DatePicker selected={startDate} onChange={(date: Date) => setStartDate(date)} />
+            <ResponsiveContainer width="100%" height={300}>
+                <LineChart data={data}>
+                    <Line type="linear" dataKey='count' stroke="blue" />
+                    <CartesianGrid stroke="#ccc" />
+                    <XAxis dataKey="hour" />
+                    <YAxis />
+                    <Tooltip />
+                    <Legend />
+                </LineChart>
+            </ResponsiveContainer>
+
         </div>
     )
 }

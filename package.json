@@ -19,6 +19,7 @@
   },
   "homepage": "https://github.com/suvelocity/analytics-challenge-boilerplate#readme",
   "dependencies": {
-    "recharts": "^1.8.5"
+    "recharts": "^1.8.5",
+    "styled-components": "^5.2.1"
   }
 }

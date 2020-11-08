@@ -67,7 +67,7 @@ export default function Retention() {
 
     return (
         <div>
-            <DatePicker selected={startDate} onChange={(date: Date) => setStartDate(date)} />
+            <strong>Pick A Date:</strong><DatePicker selected={startDate} onChange={(date: Date) => setStartDate(date)} />
             <TableContainer component={Paper}>
                 <Table className={classes.table} aria-label="customized table">
                     <TableHead>

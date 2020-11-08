@@ -8,17 +8,19 @@ import RetentionCohort from '../components/Final/Retention';
 import AllFiltered from '../components/Final/AllFiltered';
 import Chart from '../components/Final/PieChart';
 import ErrorBoundary from '../components/Final/ErrorBoundary';
-import Grid from '@material-ui/core/Grid';
+import { Grid, Paper } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 
 
-const useStyles = makeStyles(() => ({
-  MyDashBoard: {
-    display: "flex",
-    flexWrap: 'wrap',
-    padding: '0',
+const useStyles = makeStyles((theme) => ({
+  grid: {
     width: '100%',
+    margin: '0px'
   },
+  paper: {
+    padding: theme.spacing(2),
+    textAlign: 'center',
+  }
 }));
 
 
@@ -32,44 +34,69 @@ const DashBoard: React.FC = () => {
 
 
   return (
-    <div className={classes.MyDashBoard}>
+    <Grid container spacing={2} className={classes.grid}>
 
-      <ErrorBoundary>
-        <Maps />
-      </ErrorBoundary>
-      <ErrorBoundary>
-        <GraphByDay />
-      </ErrorBoundary>
-      <ErrorBoundary>
-        <GraphByHour />
-      </ErrorBoundary>
-      <ErrorBoundary>
-        <RetentionCohort />
-      </ErrorBoundary>
-      <ErrorBoundary>
-        <AllFiltered />
-      </ErrorBoundary>
-      <ErrorBoundary>
-        <Chart />
-      </ErrorBoundary>
-
-      {/* <ErrorBoundary>
+      <Grid item xs={12} md={12} >
+        <ErrorBoundary>
+          <Paper className={classes.paper}>
             <Maps />
-          </ErrorBoundary>
-          <ErrorBoundary>
+          </Paper>
+        </ErrorBoundary>
+      </Grid>
+
+      <Grid item xs={12} md={6}>
+        <ErrorBoundary>
+          <Paper className={classes.paper}>
             <GraphByDay />
-          </ErrorBoundary>
-          <ErrorBoundary>
+          </Paper>
+        </ErrorBoundary>
+      </Grid>
+
+      <Grid item xs={12} md={6}>
+        <ErrorBoundary>
+          <Paper className={classes.paper}>
             <GraphByHour />
-          </ErrorBoundary>
-          <ErrorBoundary>
+          </Paper>
+        </ErrorBoundary>
+      </Grid>
+
+      <Grid item xs={12} md={12}>
+        <ErrorBoundary>
+          <Paper className={classes.paper}>
             <RetentionCohort />
-          </ErrorBoundary>
-          <ErrorBoundary>
+          </Paper>
+        </ErrorBoundary>
+      </Grid>
+
+      <Grid item xs={2} md={2}>
+      </Grid>
+
+      <Grid item xs={8} md={8}>
+        <ErrorBoundary>
+          <Paper className={classes.paper}>
             <AllFiltered />
-          </ErrorBoundary> */}
-    </div>
+          </Paper>
+        </ErrorBoundary>
+      </Grid>
+
+      <Grid item xs={2} md={2}>
+      </Grid>
+
+
+      <Grid item xs={2} md={2}>
+      </Grid>
+      <Grid item xs={8} md={8}>
+        <ErrorBoundary>
+          <Paper className={classes.paper}>
+            <Chart />
+          </Paper>
+        </ErrorBoundary>
+      </Grid>
+      <Grid item xs={2} md={2}>
+      </Grid>
+    </Grid>
   );
 };
 
 export default DashBoard;
+

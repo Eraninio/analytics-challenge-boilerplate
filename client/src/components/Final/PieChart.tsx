@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Tooltip, Legend, PieChart, Pie, Cell } from 'recharts';
+import { Tooltip, Legend, PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
 import axios from 'axios';
 import { Event } from '../../models/event';
 
@@ -46,16 +46,20 @@ const Chart: React.FC = () => {
         })();
     }, [])
     return (
-        <div style={{ border: 'solid' }}>
-            <PieChart width={730} height={250}>
-                <Pie data={chartData} dataKey="count" nameKey="os" outerRadius={90} fill="#625cd6" >
-                    {chartData.map((data, index) => {
-                        return <Cell key={`cell-${index}`} fill={colors[index]} />
-                    })}
-                </Pie>
-                <Tooltip />
-                <Legend />
-            </PieChart>
+        <div>
+            <strong>Browser Visit:</strong>
+            <ResponsiveContainer width="100%" height={300}>
+                <PieChart width={730} height={250}>
+                    <Pie data={chartData} dataKey="count" nameKey="os" outerRadius={90} fill="#625cd6" >
+                        {chartData.map((data, index) => {
+                            return <Cell key={`cell-${index}`} fill={colors[index]} />
+                        })}
+                    </Pie>
+                    <Tooltip />
+                    <Legend />
+                </PieChart>
+            </ResponsiveContainer>
+
         </div >
     )
 }
